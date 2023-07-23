@@ -6,7 +6,7 @@ import { ICurrentWeather, IForecastWeather } from "src/models/response/Weather.m
 
 export interface IHomeStore {
   selectedLocation?: IGeoCodingLocation;
-  updateSelectedOption: (newSelected: IGeoCodingLocation) => void;
+  updateSelectedLocation: (newSelected: IGeoCodingLocation) => void;
   widgets: IWidget[];
   updateWidget: (widget: IWidget) => void;
   selectedWidget: IWidget | null;
@@ -30,7 +30,7 @@ const useHomeStore = create<IHomeStore>((set) => ({
   forecast: {} as IForecastWeather,
   widgets: [],
   selectedWidget: null,
-  updateSelectedOption: (newSelected: IGeoCodingLocation) =>
+  updateSelectedLocation: (newSelected: IGeoCodingLocation) =>
     set(() => ({
       selectedLocation: newSelected,
     })),

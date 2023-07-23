@@ -22,7 +22,6 @@ const grid = 8;
 
 const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   userSelect: "none",
-  margin: `0 0 ${grid}px 0`,
   ...draggableStyle,
 });
 const getListStyle = (isDraggingOver: boolean) => ({

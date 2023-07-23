@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import useGeoLocation from "src/hooks/useGeoLocation";
-import { IGeoCodingLocation } from "src/models/Geocoder.model";
+import { IGeoCodingLocation, IGeoLocation } from "src/models/Geocoder.model";
 import { SingleValue } from "react-select";
 import useHomeStore, { IHomeStore } from "src/zustand-store/Home.store";
 import useForecast from "src/hooks/useForecast";
@@ -17,18 +17,17 @@ export default function useHome() {
   const { getCurrentWeather, getWeatherForecastNextDays } = useForecast();
   const [locationOptions, setLocationOptions] = useState<any>(true);
   const {
-    updateSelectedOption,
-    selectedOption,
-    updateWidget,
+    updateSelectedLocation,
+    selectedLocation,
     selectedForecastDayOption,
     updateForcastDaySelection,
     updateForcastData,
     updateSelectedWidget,
   } = useHomeStore(
     (state: IHomeStore) => ({
-      updateSelectedOption: state.updateSelectedOption,
+      updateSelectedLocation: state.updateSelectedLocation,
       updateWidget: state.updateWidget,
-      selectedOption: state.selectedLocation,
+      selectedLocation: state.selectedLocation,
       selectedForecastDayOption: state.selectedForecastDayOption,
       updateForcastDaySelection: state.updateForcastDaySelection,
       updateForcastData: state.updateForecastData,
@@ -43,22 +42,14 @@ export default function useHome() {
       searchKeyword = "Singapore";
     }
     const res = await fetchLocation(searchKeyword, 5);
-    const listOptions = res.map((item: IGeoCodingLocation) => ({
+    const listOptions: IOptions[] = res.map((item: IGeoCodingLocation) => ({
       value: item,
       label: `${item.name} (${Number(item.lat).toFixed(2)}-${Number(item.lon).toFixed(2)})`,
     }));
-    if (!selectedOption && listOptions.length > 0) {
+    if (!selectedLocation && listOptions.length > 0) {
       const location = listOptions[0].value;
-      updateSelectedOption(location);
+      updateSelectedLocation(location);
       getCurrentWeather(location);
-      // getCurrentWeather(location).then((weather) => {
-      //   const defaultWidget = {
-      //     location: listOptions[0].value,
-      //     weather,
-      //   };
-      //   updateWidget(defaultWidget);
-      //   updateSelectedWidget(defaultWidget);
-      // });
       getWeatherForecastNextDays(selectedForecastDayOption.value, location);
     }
     setLocationOptions(listOptions);
@@ -68,12 +59,12 @@ export default function useHome() {
   const onChangeLocation = useCallback(
     (newValue: SingleValue<IOptions>) => {
       if (newValue) {
-        updateSelectedOption(newValue.value);
+        updateSelectedLocation(newValue.value);
         getCurrentWeather(newValue.value);
         getWeatherForecastNextDays(selectedForecastDayOption.value, newValue.value);
       }
     },
-    [updateSelectedOption, getCurrentWeather, getWeatherForecastNextDays, selectedForecastDayOption]
+    [updateSelectedLocation, getCurrentWeather, getWeatherForecastNextDays, selectedForecastDayOption]
   );
 
   const onChangeSelectDayForecast = useCallback(
@@ -83,12 +74,12 @@ export default function useHome() {
         label: string;
       }>
     ) => {
-      if (option?.value && selectedOption) {
+      if (option?.value && selectedLocation) {
         updateForcastDaySelection(option);
-        getWeatherForecastNextDays(option.value, selectedOption).then(updateForcastData);
+        getWeatherForecastNextDays(option.value, selectedLocation).then(updateForcastData);
       }
     },
-    [selectedOption, getWeatherForecastNextDays, updateForcastDaySelection, updateForcastData]
+    [selectedLocation, getWeatherForecastNextDays, updateForcastDaySelection, updateForcastData]
   );
 
   const handleChangeWidget = useCallback(
@@ -109,5 +100,6 @@ export default function useHome() {
     selectedForecastDayOption,
     locationOptions,
     handleChangeWidget,
+    selectedLocation,
   };
 }

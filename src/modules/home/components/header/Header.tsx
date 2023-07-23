@@ -7,12 +7,12 @@ import useHome from "src/modules/home/Home.action";
 import { OPTIONS } from "src/constants";
 
 const HomeHeader = () => {
-  const { onChangeSelectDayForecast, selectedForecastDayOption: selectedOption } = useHome();
+  const { onChangeSelectDayForecast, selectedForecastDayOption } = useHome();
   return (
     <div className="flex flex-wrap gap-1">
       <SearchLocation />
       <div className="w-32">
-        <SelectForcastDay value={selectedOption} options={OPTIONS} onChange={onChangeSelectDayForecast} />
+        <SelectForcastDay value={selectedForecastDayOption} options={OPTIONS} onChange={onChangeSelectDayForecast} />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import AsyncSelect from "react-select/async";
 import useHome from "src/modules/home/Home.action";
 
