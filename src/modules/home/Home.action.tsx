@@ -50,14 +50,15 @@ export default function useHome() {
     if (!selectedOption && listOptions.length > 0) {
       const location = listOptions[0].value;
       updateSelectedOption(location);
-      getCurrentWeather(location).then((weather) => {
-        const defaultWidget = {
-          location: listOptions[0].value,
-          weather,
-        };
-        updateWidget(defaultWidget);
-        updateSelectedWidget(defaultWidget);
-      });
+      getCurrentWeather(location);
+      // getCurrentWeather(location).then((weather) => {
+      //   const defaultWidget = {
+      //     location: listOptions[0].value,
+      //     weather,
+      //   };
+      //   updateWidget(defaultWidget);
+      //   updateSelectedWidget(defaultWidget);
+      // });
       getWeatherForecastNextDays(selectedForecastDayOption.value, location);
     }
     setLocationOptions(listOptions);

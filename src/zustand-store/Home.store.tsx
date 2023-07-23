@@ -18,13 +18,14 @@ export interface IHomeStore {
   updateForcastDaySelection: (selectedValue: { label: string; value: number }) => void;
   forecast: IForecastWeather;
   updateForecastData: (forecast: IForecastWeather) => void;
-  currentWeather: ICurrentWeather;
+  currentWeather: ICurrentWeather | null;
   updateCurrentWeather: (currentWeather: ICurrentWeather) => void;
+  replaceWidgets: (widgets: IWidget[]) => void; // used to replace the whole widgets.
 }
 
 const useHomeStore = create<IHomeStore>((set) => ({
   searchLocationValue: "",
-  currentWeather: {} as ICurrentWeather,
+  currentWeather: null,
   selectedForecastDayOption: OPTIONS[0],
   forecast: {} as IForecastWeather,
   widgets: [],
@@ -40,6 +41,10 @@ const useHomeStore = create<IHomeStore>((set) => ({
   updateSelectedWidget: (widget: IWidget) =>
     set(() => ({
       selectedWidget: widget,
+    })),
+  replaceWidgets: (widgets: IWidget[]) =>
+    set(() => ({
+      widgets: widgets,
     })),
   updateForcastDaySelection: (option) =>
     set(() => ({

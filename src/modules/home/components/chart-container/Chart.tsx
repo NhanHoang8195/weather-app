@@ -22,13 +22,15 @@ const ChartCurrentDate = () => {
     return formatXaxisLineChart(forecastData);
   }, [forecastData]);
   function onAddWidget() {
-    updateWidget({
-      location: (selectedLocation || {}) as IGeoCodingLocation,
-      weather: currentWeather,
-    });
+    if (selectedLocation && currentWeather) {
+      updateWidget({
+        location: selectedLocation,
+        weather: currentWeather,
+      });
+    }
   }
   const isShowWidget = useMemo(() => {
-    if (widgets.length === 0 || !selectedLocation) {
+    if (!selectedLocation) {
       return false;
     }
     return widgets.every(

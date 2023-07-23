@@ -9,11 +9,21 @@ interface WidgetProps {
   weather?: ICurrentWeather;
   isActive?: boolean;
   onSelectWidget?: (widget: IWidget) => void;
+  onRemoveWidget: (widget: IWidget) => void;
 }
 
 function Widget(props: WidgetProps) {
-  const { location = {} as IGeoCodingLocation, weather = {} as ICurrentWeather, isActive, onSelectWidget } = props;
-
+  const { location, weather, isActive, onSelectWidget, onRemoveWidget } = props;
+  function handleRemoveWidget(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    onRemoveWidget({
+      location: location as IGeoCodingLocation,
+      weather: weather as ICurrentWeather,
+    });
+  }
+  if (!weather || !location) {
+    return null;
+  }
   return (
     <div
       onClick={() =>
@@ -22,11 +32,17 @@ function Widget(props: WidgetProps) {
           weather,
         } as IWidget)
       }
-      className={`text-xl border shadow-lg p-4 rounded-lg h-full ${
+      className={`relative text-xl border shadow-lg p-4 rounded-lg h-full ${
         isActive ? "bg-blue-400 text-white" : "bg-white"
       } hover:cursor-pointer`}
     >
-      <div className={"h-full"}>
+      <button
+        onClick={handleRemoveWidget}
+        className="z-10 absolute p-1 text-sm rounded-full border text-slate-500 w-10 h-10 top-1 right-1 bg-white shadow-lg"
+      >
+        X
+      </button>
+      <div className={"relative h-full"}>
         <h3 className="text-2xl text-ellipsis whitespace-nowrap overflow-hidden">{location.name}</h3>
         <h1 className="text-4xl my-1">{weather.main.temp}°C</h1>
         <Image

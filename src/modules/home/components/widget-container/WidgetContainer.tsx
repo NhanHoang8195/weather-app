@@ -1,21 +1,24 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import Widget from "src/components/widget/Widget";
 import { IWidget } from "src/models/Wiget.model";
 import useHomeStore, { IHomeStore } from "src/zustand-store/Home.store";
 import useHome from "../../Home.action";
 import { DragDropContext, Droppable, Draggable, DropResult, Direction } from "react-beautiful-dnd";
 import useResize from "src/hooks/useResizeContainer";
-const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
+
+function reorderItem<T>(list: T[], startIndex: number, endIndex: number): T[] {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
   return result;
-};
+}
+function removeItem(list: IWidget[], id: string | number): IWidget[] {
+  return list.filter((item) => item.location.lat !== id);
+}
 
 const grid = 8;
-const DRROPPABLE_ID = "droppable-container";
 
 const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   userSelect: "none",
@@ -28,26 +31,35 @@ const getListStyle = (isDraggingOver: boolean) => ({
 });
 
 function WidgetContainer() {
-  const { widgets, selectedWidget } = useHomeStore((state: IHomeStore) => ({
+  const {
+    widgets: draggableWidgets,
+    selectedWidget,
+    replaceWidgets,
+  } = useHomeStore((state: IHomeStore) => ({
     widgets: state.widgets || [],
     selectedWidget: (state.selectedWidget || {}) as IWidget,
     updateWidget: state.updateWidget,
+    replaceWidgets: state.replaceWidgets,
   }));
 
   const { containerWidth, containerRef } = useResize();
   const { handleChangeWidget } = useHome();
-  const [draggableWidgets, setDraggleWidgets] = useState<IWidget[]>([]);
+
   function onDragEnd(result: DropResult) {
     if (!result.destination) {
       return;
     }
-    const widgetsUpdated = reorder(draggableWidgets, result.source.index, result.destination.index);
-    setDraggleWidgets(widgetsUpdated);
+    const widgetsUpdated = reorderItem(draggableWidgets, result.source.index, result.destination.index);
+    replaceWidgets(widgetsUpdated);
   }
   const directionMode: Direction = containerWidth >= 640 ? "horizontal" : "vertical";
-  useEffect(() => {
-    setDraggleWidgets(widgets);
-  }, [widgets]);
+  const onRemoveWidget = useCallback(
+    (widget: IWidget) => {
+      const widgetsUpdated = removeItem(draggableWidgets, widget.location.lat);
+      replaceWidgets(widgetsUpdated);
+    },
+    [draggableWidgets]
+  );
 
   if (draggableWidgets.length === 0) {
     return null;
@@ -59,7 +71,6 @@ function WidgetContainer() {
           {(provided, snapshot) => {
             return (
               <div
-                id={DRROPPABLE_ID}
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 className="grid gap-4 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 mt-4"
@@ -77,7 +88,8 @@ function WidgetContainer() {
                         <Widget
                           onSelectWidget={handleChangeWidget}
                           key={widget.location.lat}
-                          isActive={widget.location.lat === selectedWidget.location.lat}
+                          isActive={widget.location.lat === selectedWidget.location?.lat}
+                          onRemoveWidget={onRemoveWidget}
                           {...widget}
                         />
                       </div>
