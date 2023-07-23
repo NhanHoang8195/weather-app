@@ -35,13 +35,12 @@ const ChartCurrentDate = () => {
       (item) => item.location.lat !== selectedLocation.lat && item.location.lon !== selectedLocation.lon
     );
   }, [selectedLocation, widgets]);
-  console.log(selectedLocation, widgets);
 
   return (
-    <div className="flex flex-wrap md:flex-nowrap gap-4 mt-4 min-h-[400px]">
+    <div className="flex flex-wrap lg:flex-nowrap gap-4 mt-4 min-h-[400px]">
       <Chart
         title={`Hourly forecast ${selectedLocation ? `at ${selectedLocation.name}` : ""}`}
-        className="md:basis-3/4 basis-[100%] p-4 rounded-lg"
+        className="lg:basis-3/4 basis-[100%] p-4 rounded-lg"
         labels={formatData.xAxis}
         datasets={[
           {
@@ -52,7 +51,7 @@ const ChartCurrentDate = () => {
         showAddWiget={isShowWidget}
         onAddWidget={onAddWidget}
       />
-      <DateForecast className={"md:basis-1/4 basis-[100%] p-4 rounded-lg"} />
+      <DateForecast className={"lg:basis-1/4 basis-[100%] p-4 rounded-lg"} />
     </div>
   );
 };

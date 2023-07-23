@@ -16,7 +16,7 @@ interface LineChartProps {
 export default function LineChart(props: LineChartProps) {
   const { labels, datasets, className, showAddWiget, onAddWidget, title, ...rest } = props;
   return (
-    <div className={`${className} border shadow-lg`}>
+    <div className={`${className} border shadow-lg w-full`}>
       <h1 className="text-center text-2xl relative">
         {title}
         {showAddWiget && (
@@ -28,25 +28,27 @@ export default function LineChart(props: LineChartProps) {
           </button>
         )}
       </h1>
-      <Line
-        className="min-w-full"
-        datasetIdKey="id"
-        data={{
-          labels: labels,
-          datasets: datasets,
-          ...rest,
-        }}
-        options={{
-          responsive: true,
-          scales: {
-            x: {
-              ticks: {
-                autoSkip: false,
+      <div>
+        <Line
+          className="min-w-full"
+          datasetIdKey="id"
+          data={{
+            labels: labels,
+            datasets: datasets,
+            ...rest,
+          }}
+          options={{
+            responsive: true,
+            scales: {
+              x: {
+                ticks: {
+                  autoSkip: false,
+                },
               },
             },
-          },
-        }}
-      />
+          }}
+        />
+      </div>
     </div>
   );
 }
